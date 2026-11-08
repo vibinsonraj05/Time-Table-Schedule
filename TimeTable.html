@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1224">
+  <title>MCA Weekly Timetable</title>
+  <style>
+    :root {
+      --bg: #080f20;
+      --panel: rgba(19, 31, 56, .88);
+      --panel2: #14213b;
+      --line: rgba(148, 163, 184, .2);
+      --text: #edf4ff;
+      --muted: #9eacc5;
+      --cyan: #63e6e2;
+      --blue: #7da7ff;
+      --violet: #b49aff;
+      --shadow: 0 24px 60px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 38px 24px 48px;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 12% 8%, rgba(59,130,246,.22), transparent 34%),
+        radial-gradient(ellipse at 88% 82%, rgba(139,92,246,.19), transparent 32%),
+        linear-gradient(135deg, #070d1b, #101b32 52%, #090f20);
+      background-attachment: fixed;
+      perspective: 1600px;
+      overflow-x: hidden;
+    }
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: page-arrive .85s cubic-bezier(.2,.75,.25,1) both;
+    }
+    .page::before {
+      content: "";
+      position: fixed;
+      inset: 9% 5% 8%;
+      pointer-events: none;
+      z-index: -1;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(72,120,210,.12), transparent 68%);
+      filter: blur(24px);
+      transform: translateZ(-90px);
+    }
+    @keyframes page-arrive {
+      from { opacity: 0; transform: translateY(22px) rotateX(3deg); }
+      to { opacity: 1; transform: translateY(0) rotateX(0); }
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 18px; margin-bottom: 26px;
+      padding: 16px 19px;
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: 19px;
+      background: linear-gradient(145deg, rgba(31,48,78,.82), rgba(13,23,43,.82));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.1), inset 0 -1px 0 rgba(0,0,0,.25);
+      transform: translateZ(22px);
+    }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-icon {
+      width: 48px; height: 48px; display: grid; place-items: center;
+      border-radius: 15px; font-size: 22px;
+      color: #071321; background: linear-gradient(145deg, var(--cyan), var(--blue));
+      box-shadow: 0 9px 24px rgba(99,230,226,.24), inset 0 2px 2px rgba(255,255,255,.7);
+    }
+    .brand small { display: block; color: var(--muted); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+    .brand strong { display: block; margin-top: 3px; font-size: 15px; letter-spacing: .04em; }
+    .term {
+      padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px;
+      color: #c9d7ef; background: rgba(255,255,255,.045); font-size: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    .hero {
+      margin: 0 0 22px;
+      padding: 22px 25px;
+      border: 1px solid rgba(148,163,184,.16);
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(22,39,67,.78), rgba(13,23,43,.62));
+      box-shadow: 0 16px 32px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
+      transform: translateZ(34px);
+    }
+    .eyebrow { color: var(--cyan); font-size: 11px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; }
+    h1 { margin: 8px 0 7px; font-size: clamp(30px, 5vw, 48px); line-height: 1.05; letter-spacing: -.045em; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
+    .table-shell {
+      position: relative; padding: 1px; border-radius: 24px;
+      background: linear-gradient(135deg, rgba(99,230,226,.7), rgba(125,167,255,.2) 42%, rgba(180,154,255,.55));
+      box-shadow: var(--shadow), 0 18px 45px rgba(0,0,0,.2);
+      transform: translateZ(48px) rotateX(2deg) rotateY(-.35deg);
+      transform-style: preserve-3d;
+      transition: transform .4s ease, box-shadow .4s ease;
+    }
+    .table-shell:hover {
+      transform: translateZ(62px) rotateX(0deg) rotateY(0deg) translateY(-5px);
+      box-shadow: 0 38px 85px rgba(0,0,0,.5), 0 0 38px rgba(99,230,226,.1);
+    }
+    .table-inner { overflow-x: auto; border-radius: 23px; background: rgba(10,18,35,.96); }
+    table { width: 100%; min-width: 900px; border-collapse: separate; border-spacing: 7px; padding: 12px; }
+    th, td { text-align: center; border-radius: 12px; }
+    thead th {
+      padding: 16px 11px; color: #dbeafe; font-size: 11px; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+      background: linear-gradient(145deg, #233958, #172742);
+      border: 1px solid rgba(148,163,184,.16);
+      box-shadow: 0 5px 12px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.1);
+      white-space: nowrap;
+    }
+    thead th:first-child { color: var(--cyan); min-width: 112px; }
+    tbody th {
+      padding: 17px 13px; color: #e7efff; font-size: 12px; letter-spacing: .06em;
+      text-transform: uppercase; background: linear-gradient(145deg, #263b5d, #172944);
+      border: 1px solid rgba(148,163,184,.18);
+      box-shadow: 0 6px 14px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    td {
+      min-width: 112px; padding: 16px 12px; color: #dce8fb;
+      font-size: 12px; line-height: 1.45; font-weight: 650;
+      background: linear-gradient(145deg, rgba(34,52,82,.98), rgba(19,33,57,.98));
+      border: 1px solid rgba(148,163,184,.14);
+      box-shadow: 0 7px 13px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.055);
+      transition: transform .2s ease, border-color .2s ease, filter .2s ease;
+    }
+    td:hover {
+      transform: translateY(-4px) scale(1.025);
+      border-color: rgba(99,230,226,.55);
+      filter: brightness(1.16);
+      box-shadow: 0 12px 22px rgba(0,0,0,.3), 0 0 18px rgba(99,230,226,.1);
+      position: relative; z-index: 2;
+    }
+    td.double { background: linear-gradient(145deg, rgba(30,77,91,.98), rgba(19,48,66,.98)); }
+    td.ai { background: linear-gradient(145deg, rgba(64,52,105,.98), rgba(37,31,70,.98)); }
+    td.security { background: linear-gradient(145deg, rgba(74,49,89,.98), rgba(43,30,63,.98)); }
+    th.break-heading {
+      min-width: 58px;
+      padding: 12px 7px;
+      color: #bafbf4;
+      background: linear-gradient(145deg, #1d555b, #123641);
+      border: 1px solid rgba(99,230,226,.22);
+      box-shadow: 0 5px 12px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.1);
+      font-size: 10px;
+    }
+    td.merged-break {
+      width: 58px;
+      min-width: 58px;
+      padding: 12px 7px;
+      color: #c5fff8;
+      background: linear-gradient(180deg, rgba(29,91,96,.98), rgba(12,47,57,.99));
+      border: 1px solid rgba(99,230,226,.24);
+      border-radius: 10px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 8px 18px rgba(0,0,0,.25);
+      vertical-align: middle;
+      transition: filter .25s ease, box-shadow .25s ease;
+    }
+    td.merged-break span {
+      display: inline-block;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    td.merged-break:hover {
+      filter: brightness(1.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 12px 24px rgba(0,0,0,.32), 0 0 18px rgba(99,230,226,.12);
+    }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px;
+      transform: translateZ(26px);
+      transition: transform .3s ease, box-shadow .3s ease;
+      padding: 15px 18px; border: 1px solid var(--line); border-radius: 16px;
+      background: linear-gradient(145deg, rgba(25,42,70,.9), rgba(12,22,41,.9));
+      box-shadow: 0 14px 28px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .legend:hover { transform: translateZ(36px) translateY(-2px); box-shadow: 0 20px 36px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08); }
+    .legend span { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px currentColor; }
+    .dot.ai { background: var(--violet); }
+    .dot.security { background: #d29bff; }
+    .note {
+      margin: 16px 2px 0;
+      padding: 12px 15px;
+      color: #8fa1bf;
+      font-size: 11px;
+      line-height: 1.6;
+      border-left: 3px solid rgba(99,230,226,.55);
+      border-radius: 0 10px 10px 0;
+      background: linear-gradient(90deg, rgba(24,42,68,.65), rgba(24,42,68,0));
+      transform: translateZ(14px);
+    }
+    @media (max-width: 700px) {
+      body { padding: 24px 13px 32px; }
+      .topbar { align-items: flex-start; }
+      .term { font-size: 10px; }
+      .brand-icon { width: 42px; height: 42px; }
+      .table-shell { border-radius: 18px; }
+      .table-inner { border-radius: 17px; }
+      table { border-spacing: 5px; padding: 8px; }
+      thead th, td { padding: 13px 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">▦</div>
+        <div><small>Academic Planner</small><strong>MCA • WEEKLY SCHEDULE</strong></div>
+      </div>
+      <div class="term">CLASS TIMETABLE&nbsp; / &nbsp;MCA</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Plan · Focus · Achieve</div>
+      <h1>Time Table</h1>
+      <p class="subtitle">Your weekly class schedule, organised at a glance.</p>
+    </section>
+
+    <section class="table-shell" aria-label="MCA weekly timetable">
+      <div class="table-inner">
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>08:45–09:45</th>
+              <th>09:45–10:45</th>
+              <th class="break-heading">10:45–11:15</th>
+              <th>11:15–12:15</th>
+              <th>12:15–01:15</th>
+              <th class="break-heading">01:15–02:00</th>
+              <th>02:00–03:00</th>
+              <th>03:00–04:00</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Monday</th>
+              <td class="double" colspan="2">Web Application<br>Framework – 1</td>
+              <td class="break merged-break tea" rowspan="4"><span>Tea Break</span></td>
+              <td colspan="2">Data Communication<br>&amp; Networking</td>
+              <td class="break merged-break lunch" rowspan="4"><span>Lunch Break</span></td>
+              <td class="security" colspan="2">Network Security</td>
+            </tr>
+            <tr>
+              <th scope="row">Tuesday</th>
+              <td class="double" colspan="2">Web Application<br>Framework – 1</td>
+              
+              <td colspan="2">Data Communication<br>&amp; Networking</td>
+              
+              <td colspan="2">Data Communication<br>&amp; Networking</td>
+            </tr>
+            <tr>
+              <th scope="row">Thursday</th>
+              <td>Aptitude &amp;<br>Reasoning</td>
+              <td class="ai">Artificial Intelligence<br>&amp; Machine Learning</td>
+              
+              <td class="double" colspan="2">Analysis, Algorithm<br>&amp; Design</td>
+              
+              <td colspan="2">Data Communication<br>&amp; Networking</td>
+            </tr>
+            <tr>
+              <th scope="row">Friday</th>
+              <td>Aptitude &amp;<br>Reasoning</td>
+              <td class="ai">Artificial Intelligence<br>&amp; Machine Learning</td>
+              
+              <td class="double" colspan="2">Analysis, Algorithm<br>&amp; Design</td>
+              
+              <td colspan="2">Data Communication<br>&amp; Networking</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    
+   
+  </main>
+</body>
+</html>
